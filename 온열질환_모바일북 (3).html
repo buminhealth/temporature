@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1558A0">
+<title>온열질환 예방 교육자료</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  :root {
+    --blue: #1558A0;
+    --navy: #0F3460;
+    --light-blue: #EEF4FF;
+    --mid-blue: #C8D8F0;
+    --orange: #E05000;
+    --bg: #EEF3F8;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Nanum Gothic', sans-serif;
+    background: var(--navy);
+    touch-action: pan-y;
+  }
+
+  /* ── 북 컨테이너 ── */
+  .book {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── 상단 진행바 ── */
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #FFD060;
+    transition: width 0.4s ease;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ── 챕터 헤더 ── */
+  .chapter-header {
+    background: var(--blue);
+    padding: 12px 18px 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .chapter-info { flex: 1; }
+  .chapter-num  { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 1px; }
+  .chapter-title { font-size: 17px; font-weight: 800; color: #fff; margin-top: 2px; line-height: 1.2; }
+  .sos-badge {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+    padding: 6px 14px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .sos-badge .sl { font-size: 9px; color: rgba(255,255,255,0.7); }
+  .sos-badge .sn { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+  .sos-badge .ss { font-size: 9px; color: rgba(255,255,255,0.75); }
+
+  /* ── 챕터 슬라이더 ── */
+  .slides-wrap {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .slides {
+    display: flex;
+    height: 100%;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    will-change: transform;
+  }
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--bg);
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  .slide::-webkit-scrollbar { display: none; }
+  .slide-inner { padding: 16px 14px 24px; }
+
+  /* ── 하단 네비게이션 ── */
+  .nav-bar {
+    background: var(--navy);
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    border-radius: 50px;
+    padding: 10px 22px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Nanum Gothic', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .nav-btn:active { background: rgba(255,255,255,0.25); }
+  .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
+  .nav-btn.next { background: var(--blue); }
+  .nav-btn.next:active { background: #1060B0; }
+
+  /* 챕터 점 */
+  .dots {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .dot.active {
+    background: #FFD060;
+    width: 22px;
+    border-radius: 4px;
+  }
+
+  /* ══ 공통 카드 ══ */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid var(--mid-blue);
+    margin-bottom: 12px;
+  }
+  .card-hd {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-hd.blue { background: var(--blue); }
+  .card-hd.navy { background: var(--navy); }
+  .card-hd.orange { background: var(--orange); }
+  .card-hd .ci { font-size: 16px; }
+  .card-hd .ct { font-size: 14px; font-weight: 800; color: #fff; }
+
+  /* ══ CH1: 표지 ══ */
+  .cover {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #1558A0 0%, #0F3460 100%);
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .cover-sun  { font-size: 72px; margin-bottom: 20px; }
+  .cover-law  { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+  .cover-h1   { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 6px; }
+  .cover-sub  { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 36px; }
+  .cover-chaps {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .cover-chap {
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: left;
+  }
+  .cover-chap:active { background: rgba(255,255,255,0.22); }
+  .cover-chap .cc-num {
+    width: 28px; height: 28px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: #FFD060;
+    flex-shrink: 0;
+  }
+  .cover-chap .cc-icon { font-size: 22px; flex-shrink: 0; }
+  .cover-chap .cc-text { font-size: 14px; font-weight: 700; color: #fff; }
+  .cover-sos {
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 12px 28px;
+    text-align: center;
+  }
+  .cover-sos .cs-l { font-size: 11px; color: rgba(255,255,255,0.7); }
+  .cover-sos .cs-n { font-size: 36px; font-weight: 800; color: #fff; line-height: 1; }
+  .cover-sos .cs-s { font-size: 11px; color: rgba(255,255,255,0.75); }
+
+  /* ══ CH2: 3대 원칙 ══ */
+  .rule-row {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid #EEF2F8;
+  }
+  .rule-row:last-child { border-bottom: none; }
+  .rule-badge {
+    width: 72px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 14px 6px;
+    background: #F0F5FF;
+    gap: 5px; border-right: 1px solid var(--mid-blue);
+  }
+  .rule-badge .ri { font-size: 30px; }
+  .rule-badge .rn { font-size: 14px; font-weight: 800; color: var(--blue); }
+  .rule-content { flex: 1; padding: 12px 14px; }
+  .rule-content .rs { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .rule-content .rl { font-size: 13.5px; color: #333; line-height: 2; }
+
+  /* ══ CH3: 증상 ══ */
+  .sym-row {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid #EEF2F8;
+  }
+  .sym-row:last-child { border-bottom: none; }
+  .sym-icon-wrap {
+    width: 52px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; padding: 8px;
+  }
+  .sym-icon-wrap.red  { background: #EEF4FF; border-right: 1px solid var(--mid-blue); }
+  .sym-icon-wrap.gray { background: #F5F7FA; border-right: 1px solid #E0E4EA; }
+  .sym-body { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .sym-name { font-size: 14px; font-weight: 800; margin-bottom: 3px; }
+  .sym-name.red  { color: var(--blue); }
+  .sym-name.gray { color: #444; }
+  .sym-desc { font-size: 12.5px; color: #555; line-height: 1.5; }
+
+  /* ══ CH4: WBGT ══ */
+  table.wt { width: 100%; border-collapse: collapse; }
+  table.wt thead th {
+    background: var(--navy); color: #fff;
+    padding: 10px 10px; font-size: 13px; font-weight: 700;
+    text-align: center; font-family: 'Nanum Gothic', sans-serif;
+  }
+  table.wt tbody td {
+    padding: 12px 10px; border-top: 1px solid #EEE;
+    text-align: center; font-size: 13.5px;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  table.wt tbody td:last-child { text-align: left; font-weight: 700; }
+  table.wt tbody tr:nth-child(even) td { background: #F5F8FF; }
+  table.wt tbody tr:last-child td     { background: #EEF4FF; color: var(--navy); font-weight: 800; }
+  .dot-c { display:inline-block; width:10px; height:10px; border-radius:50%; vertical-align:middle; margin-right:5px; }
+  .wbgt-note { font-size: 11px; color: #999; padding: 8px 12px; }
+
+  /* ══ CH5: 응급처치 ══ */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 14px 12px;
+  }
+  .step-card {
+    background: #F5F8FF;
+    border: 1.5px solid var(--mid-blue);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .step-card.last { border-color: var(--blue); }
+  .step-num {
+    width: 24px; height: 24px;
+    background: var(--blue); color: #fff;
+    border-radius: 50%; font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-ico  { font-size: 30px; }
+  .step-tit  { font-size: 13px; font-weight: 800; color: #1A1A1A; line-height: 1.3; }
+  .step-desc { font-size: 11.5px; color: #666; line-height: 1.4; }
+
+  .alert-box {
+    margin: 0 12px 16px;
+    background: #EEF4FF;
+    border: 2px solid var(--blue);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .alert-box .ai { font-size: 22px; flex-shrink: 0; }
+  .alert-box .at { font-size: 13px; color: var(--navy); line-height: 1.6; font-weight: 700; }
+
+  /* ══ CH6: TBM ══ */
+  .tbm-meta-bar {
+    background: #F0F5FF;
+    border-bottom: 1px solid var(--mid-blue);
+    padding: 7px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .tbm-meta-bar .ts { font-size: 11px; color: #666; }
+  .tbm-meta-bar .tb {
+    background: var(--blue); color: #fff;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .tbm-item {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid #EEF2F8;
+  }
+  .tbm-item:last-child { border-bottom: none; }
+  .tbm-tag {
+    width: 58px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px 4px;
+    font-size: 11px; font-weight: 800;
+    text-align: center; line-height: 1.3;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+  .tbm-tag.self   { background: #EEF4FF; color: var(--blue);   border-right: 1px solid #C8D8F0; }
+  .tbm-tag.obs    { background: #E8F0FF; color: #0A3D8A;       border-right: 1px solid #B8CCF0; }
+  .tbm-tag.spc    { background: #EAE8FF; color: #3B2D8E;       border-right: 1px solid #C8C0F0; }
+  .tbm-tag.pledge { background: #E8F4FF; color: var(--blue);   border-right: 1px solid #B8D8F0; }
+  .tbm-tag.action { background: #E8F4FA; color: #0F5070;       border-right: 1px solid #B0D0E8; }
+  .tbm-q {
+    flex: 1; padding: 10px 12px;
+    font-size: 13px; color: #1A1A1A; line-height: 1.6;
+    font-family: 'Nanum Gothic', sans-serif;
+    display: flex; align-items: center;
+  }
+  .tbm-q strong { color: var(--blue); font-weight: 800; }
+
+  /* ── 스크롤 힌트 ── */
+  .scroll-hint {
+    text-align: center;
+    padding: 10px;
+    font-size: 11px;
+    color: rgba(0,0,0,0.3);
+    animation: bounce 1.5s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(4px); }
+  }
+</style>
+</head>
+<body>
+<div class="book">
+
+  <!-- 진행바 -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="pbar" style="width:16.7%"></div>
+  </div>
+
+  <!-- 챕터 헤더 -->
+  <div class="chapter-header">
+    <div class="chapter-info">
+      <div class="chapter-num" id="ch-num">CHAPTER 1 / 6</div>
+      <div class="chapter-title" id="ch-title">온열질환 예방 교육자료</div>
+    </div>
+    <div class="sos-badge">
+      <div class="sl">응급신고</div>
+      <div class="sn">119</div>
+      <div class="ss">즉시신고</div>
+    </div>
+  </div>
+
+  <!-- 슬라이드 영역 -->
+  <div class="slides-wrap" id="slides-wrap">
+    <div class="slides" id="slides">
+
+      <!-- ① 표지 -->
+      <div class="slide">
+        <div class="cover">
+          <div class="cover-sun">☀️</div>
+          <div class="cover-law">산업안전보건법 제24조 · 고용노동부 고시 제2023-19호</div>
+          <div class="cover-h1">온열질환 예방<br>교육자료</div>
+          <div class="cover-sub">고령 근로자 맞춤 · 작업 전 TBM 포함</div>
+          <div class="cover-chaps">
+            <div class="cover-chap" onclick="goTo(1)">
+              <div class="cc-num">1</div>
+              <div class="cc-icon">🌡</div>
+              <div class="cc-text">온도별 작업 기준</div>
+            </div>
+            <div class="cover-chap" onclick="goTo(2)">
+              <div class="cc-num">2</div>
+              <div class="cc-icon">🩺</div>
+              <div class="cc-text">주요 증상 — 즉시 신고</div>
+            </div>
+            <div class="cover-chap" onclick="goTo(3)">
+              <div class="cc-num">3</div>
+              <div class="cc-icon">🚑</div>
+              <div class="cc-text">응급처치 6단계</div>
+            </div>
+            <div class="cover-chap" onclick="goTo(4)">
+              <div class="cc-num">4</div>
+              <div class="cc-icon">💡</div>
+              <div class="cc-text">예방 3대 원칙</div>
+            </div>
+            <div class="cover-chap" onclick="goTo(5)">
+              <div class="cc-num">5</div>
+              <div class="cc-icon">📋</div>
+              <div class="cc-text">TBM 체크리스트</div>
+            </div>
+          </div>
+          <div class="cover-sos">
+            <div class="cs-l">응급신고</div>
+            <div class="cs-n">119</div>
+            <div class="cs-s">의식 없으면 즉시</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ① 온도별 작업기준 -->
+      <div class="slide">
+        <div class="slide-inner">
+          <div class="card">
+            <div class="card-hd navy"><span class="ci">🌡</span><span class="ct">폭염 단계별 작업중지 권고 기준</span></div>
+            <div style="padding:0;">
+
+              <div style="display:flex; align-items:stretch; border-bottom:1px solid #EEE;">
+                <div style="width:110px; flex-shrink:0; background:#FF9500; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px 8px; text-align:center; border-right:1px solid rgba(255,255,255,0.3);">
+                  <div style="font-size:13px; font-weight:800; color:#fff; line-height:1.3;">체감온도<br>33℃ 이상</div>
+                  <div style="font-size:10px; color:rgba(255,255,255,0.9); margin-top:4px; background:rgba(0,0,0,0.15); border-radius:4px; padding:2px 6px;">폭염주의보</div>
+                </div>
+                <div style="flex:1; padding:14px 14px; display:flex; align-items:center;">
+                  <div style="font-size:13px; color:#333; line-height:1.7;">✔ 작업시간대 <strong style="color:#B85000;">조정</strong> 또는<br>옥외작업 <strong style="color:#B85000;">단축</strong></div>
+                </div>
+              </div>
+
+              <div style="display:flex; align-items:stretch; border-bottom:1px solid #EEE;">
+                <div style="width:110px; flex-shrink:0; background:#E03000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px 8px; text-align:center; border-right:1px solid rgba(255,255,255,0.3);">
+                  <div style="font-size:13px; font-weight:800; color:#fff; line-height:1.3;">체감온도<br>35℃ 이상</div>
+                  <div style="font-size:10px; color:rgba(255,255,255,0.9); margin-top:4px; background:rgba(0,0,0,0.15); border-radius:4px; padding:2px 6px;">폭염경보</div>
+                </div>
+                <div style="flex:1; padding:14px 14px; display:flex; align-items:center;">
+                  <div style="font-size:13px; color:#333; line-height:1.7;">✔ 무더위 시간대 불가피한 경우 제외<br>옥외작업 <strong style="color:#C00;">중지</strong></div>
+                </div>
+              </div>
+
+              <div style="display:flex; align-items:stretch;">
+                <div style="width:110px; flex-shrink:0; background:#8B0000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:14px 8px; text-align:center; border-right:1px solid rgba(255,255,255,0.3);">
+                  <div style="font-size:13px; font-weight:800; color:#fff; line-height:1.3;">체감온도<br>38℃ 이상</div>
+                  <div style="font-size:10px; color:rgba(255,255,255,0.9); margin-top:4px; background:rgba(0,0,0,0.2); border-radius:4px; padding:2px 6px;">폭염중대경보</div>
+                </div>
+                <div style="flex:1; padding:14px 14px; display:flex; align-items:center;">
+                  <div style="font-size:13px; color:#333; line-height:1.7;">✔ 재난·안전관리 긴급조치 작업 외<br>옥외작업 <strong style="color:#8B0000;">즉시 중지</strong></div>
+                </div>
+              </div>
+
+            </div>
+            <div style="font-size:10px; color:#999; padding:7px 12px;">※ 고용노동부·안전보건공단·질병관리청 기준</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ② 증상 -->
+      <div class="slide">
+        <div class="slide-inner">
+          <div class="card">
+            <div class="card-hd orange"><span class="ci">🩺</span><span class="ct">이런 증상이 나타나면 즉시 신고!</span></div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap red">😵</div>
+              <div class="sym-body">
+                <div class="sym-name red">🚨 정신이 흐릿해짐</div>
+                <div class="sym-desc">말이 어눌하거나 반응 없음 → <strong>즉시 119</strong></div>
+              </div>
+            </div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap red">🌡️</div>
+              <div class="sym-body">
+                <div class="sym-name red">🚨 몸이 뜨겁고 땀 없음</div>
+                <div class="sym-desc">체온 40℃↑, 피부 건조 → <strong>즉시 119</strong></div>
+              </div>
+            </div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap red">🦵</div>
+              <div class="sym-body">
+                <div class="sym-name red">🚨 근육 경련·떨림</div>
+                <div class="sym-desc">종아리·배 근육 심한 경련 → 작업 중단·보고</div>
+              </div>
+            </div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap gray">💫</div>
+              <div class="sym-body">
+                <div class="sym-name gray">⚠ 두통·어지러움</div>
+                <div class="sym-desc">머리 띵하거나 어지럽다 → 그늘·휴식</div>
+              </div>
+            </div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap gray">🤢</div>
+              <div class="sym-body">
+                <div class="sym-name gray">⚠ 메스꺼움·구토</div>
+                <div class="sym-desc">속이 울렁거리거나 토할 것 → 작업 중단</div>
+              </div>
+            </div>
+            <div class="sym-row">
+              <div class="sym-icon-wrap gray">💦</div>
+              <div class="sym-body">
+                <div class="sym-name gray">⚠ 땀을 비정상적으로 흘림</div>
+                <div class="sym-desc">극심한 발한·피로·창백 → 휴식·수분</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ 응급처치 -->
+      <div class="slide">
+        <div class="slide-inner">
+          <div class="card">
+            <div class="card-hd blue"><span class="ci">🚑</span><span class="ct">온열질환자 응급처치 6단계</span></div>
+            <div class="steps-grid">
+              <div class="step-card">
+                <div class="step-num">1</div>
+                <div class="step-ico">📢</div>
+                <div class="step-tit">주변에<br>알리기</div>
+                <div class="step-desc">동료·관리자<br>즉시 호출</div>
+              </div>
+              <div class="step-card">
+                <div class="step-num">2</div>
+                <div class="step-ico">📞</div>
+                <div class="step-tit">119 신고</div>
+                <div class="step-desc">의식 없으면<br>즉시 신고</div>
+              </div>
+              <div class="step-card">
+                <div class="step-num">3</div>
+                <div class="step-ico">🏃</div>
+                <div class="step-tit">시원한 곳<br>이동</div>
+                <div class="step-desc">에어컨 실내<br>또는 그늘</div>
+              </div>
+              <div class="step-card">
+                <div class="step-num">4</div>
+                <div class="step-ico">👕</div>
+                <div class="step-tit">옷 느슨하게<br>풀기</div>
+                <div class="step-desc">벨트·단추<br>모두 풀기</div>
+              </div>
+              <div class="step-card">
+                <div class="step-num">5</div>
+                <div class="step-ico">🧊</div>
+                <div class="step-tit">몸 식히기</div>
+                <div class="step-desc">찬물 수건<br>겨드랑이·목</div>
+              </div>
+              <div class="step-card last">
+                <div class="step-num">6</div>
+                <div class="step-ico">💧</div>
+                <div class="step-tit">수분 보충</div>
+                <div class="step-desc" style="color:var(--blue);font-weight:800;">의식 있을<br>때만!</div>
+              </div>
+            </div>
+            <div class="alert-box">
+              <div class="ai">🚨</div>
+              <div class="at">열사병(체온 40℃↑, 의식 흐림, 땀 없음)은 즉시 119 신고 후 빠르게 몸을 식혀야 합니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ④ 예방 3대 원칙 -->
+      <div class="slide">
+        <div class="slide-inner">
+          <div class="card">
+            <div class="card-hd blue"><span class="ci">💧</span><span class="ct">물 — 15~20분마다 한 컵씩</span></div>
+            <div class="rule-row">
+              <div class="rule-badge"><div class="ri">💧</div><div class="rn">물</div></div>
+              <div class="rule-content">
+                <div class="rs">갈증을 느끼기 전에 미리 마신다</div>
+                <div class="rl">
+                  ✔ 시원한 물 또는 이온음료<br>
+                  ✔ 술·커피는 마시지 않는다<br>
+                  ✔ 작업 중 수시로 수분 보충
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd blue"><span class="ci">🌳</span><span class="ct">그늘 — 서늘한 곳에서 쉰다</span></div>
+            <div class="rule-row">
+              <div class="rule-badge"><div class="ri">🌳</div><div class="rn">그늘</div></div>
+              <div class="rule-content">
+                <div class="rs">직사광선을 피해 그늘이나 실내에서 휴식</div>
+                <div class="rl">
+                  ✔ 에어컨 휴게실 이용<br>
+                  ✔ 그늘막·차양 아래 휴식<br>
+                  ✔ 직사광선 최대한 피하기
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd blue"><span class="ci">⏰</span><span class="ct">휴식 — 오후 2~5시 작업 자제</span></div>
+            <div class="rule-row">
+              <div class="rule-badge"><div class="ri">⏰</div><div class="rn">휴식</div></div>
+              <div class="rule-content">
+                <div class="rs">몸이 이상하면 즉시 쉰다</div>
+                <div class="rl">
+                  ✔ 1시간 작업 → 15분 쉬기<br>
+                  ✔ 가장 더운 시간대 피하기<br>
+                  ✔ 무리하지 않는다
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⑤ TBM -->
+      <div class="slide">
+        <div class="slide-inner">
+          <div class="card">
+            <div class="card-hd navy"><span class="ci">📋</span><span class="ct">폭염 안전 TBM 체크리스트</span></div>
+            <div class="tbm-meta-bar">
+              <span class="ts">폭염 안전 지킴이 v1.2.0 · 매일 작업 전 확인</span>
+              <span class="tb">매일 필수</span>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag self">컨디션</div>
+              <div class="tbm-q">현재 가벼운 두통, 어지러움, 속 울렁거림 또는 <strong>무력감</strong>이 있습니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag self">건강상태</div>
+              <div class="tbm-q">감기 기운(오한·발열)이 있거나 <strong>혈압·당뇨·이뇨제</strong> 약 복용 중입니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag self">개인요인</div>
+              <div class="tbm-q">전날 <strong>과음</strong>을 하였거나 수면 부족으로 오늘 <strong>피로감</strong>이 심합니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag self">현장적응</div>
+              <div class="tbm-q">현장에 <strong>신규 배치</strong>되었거나 고온 작업이 오랜만이거나 처음입니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag obs">외관 관찰</div>
+              <div class="tbm-q">얼굴이 유독 <strong>창백하거나 붉은 사람</strong>, 숨을 거칠게 쉬는 사람이 있습니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag obs">행동 관찰</div>
+              <div class="tbm-q">대답이 눈에 띄게 <strong>굼뜨거나</strong> 걸음걸이가 <strong>비틀거리는</strong> 사람이 있습니까?</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag spc">특별관리</div>
+              <div class="tbm-q">오늘 작업조에 민감군(<strong>고령자 / 유소견자 / 신규자</strong>) 지정 대상자가 있습니까? → 있으면 반드시 관리자 동반 배치</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag pledge">물 섭취<br>서약</div>
+              <div class="tbm-q">매 <strong>15~20분마다</strong> 시원한 물을 규칙적으로 마시겠습니다.</div>
+            </div>
+            <div class="tbm-item">
+              <div class="tbm-tag action">동료 관찰<br>서약</div>
+              <div class="tbm-q">동료가 비틀거리거나 이상하면 <strong>즉시 작업을 멈추고</strong> 관리자에게 알리겠습니다.</div>
+            </div>
+          </div>
+          <div style="text-align:center; padding:8px; font-size:11px; color:#999;">
+            출처: 안전보건공단(KOSHA) · 고용노동부 고시 제2023-19호 · 산업안전보건법 제24조
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /slides -->
+  </div><!-- /slides-wrap -->
+
+  <!-- 하단 네비 -->
+  <div class="nav-bar">
+    <button class="nav-btn prev" id="btn-prev" onclick="move(-1)" disabled>◀ 이전</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn next" id="btn-next" onclick="move(1)">다음 ▶</button>
+  </div>
+
+</div><!-- /book -->
+
+<script>
+  const TOTAL = 6;
+  const titles = [
+    '온열질환 예방 교육자료',
+    '온도별 작업 기준',
+    '주요 증상 — 즉시 신고',
+    '응급처치 6단계',
+    '예방 3대 원칙',
+    'TBM 체크리스트'
+  ];
+
+  let cur = 0;
+  const slidesEl = document.getElementById('slides');
+  const pbar     = document.getElementById('pbar');
+  const chNum    = document.getElementById('ch-num');
+  const chTitle  = document.getElementById('ch-title');
+  const btnPrev  = document.getElementById('btn-prev');
+  const btnNext  = document.getElementById('btn-next');
+  const dotsEl   = document.getElementById('dots');
+
+  // 점 생성
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function update() {
+    slidesEl.style.transform = `translateX(-${cur * 100}%)`;
+    pbar.style.width = `${((cur + 1) / TOTAL) * 100}%`;
+    chNum.textContent   = `CHAPTER ${cur + 1} / ${TOTAL}`;
+    chTitle.textContent = titles[cur];
+    btnPrev.disabled = cur === 0;
+    btnNext.disabled = cur === TOTAL - 1;
+    btnNext.textContent = cur === TOTAL - 1 ? '✔ 완료' : '다음 ▶';
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === cur);
+    });
+    // 슬라이드 스크롤 상단으로
+    document.querySelectorAll('.slide')[cur].scrollTop = 0;
+  }
+
+  function move(dir) {
+    const next = cur + dir;
+    if (next < 0 || next >= TOTAL) return;
+    cur = next;
+    update();
+  }
+
+  function goTo(idx) {
+    cur = idx;
+    update();
+  }
+
+  // 스와이프 지원
+  let startX = 0, startY = 0, moved = false;
+  const wrap = document.getElementById('slides-wrap');
+
+  wrap.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    moved = false;
+  }, { passive: true });
+
+  wrap.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+      moved = true;
+    }
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', e => {
+    if (!moved) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) {
+      move(dx < 0 ? 1 : -1);
+    }
+  });
+
+  // 키보드 지원
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') move(1);
+    if (e.key === 'ArrowLeft')  move(-1);
+  });
+
+  update();
+</script>
+</body>
+</html>
