@@ -52,7 +52,7 @@
   /* ── 챕터 헤더 ── */
   .chapter-header {
     background: var(--blue);
-    padding: 12px 18px 10px;
+    padding:6px 18px 6px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -60,16 +60,16 @@
   }
   .chapter-info { flex: 1; }
   .chapter-num  { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 1px; }
-  .chapter-title { font-size: 17px; font-weight: 800; color: #fff; margin-top: 2px; line-height: 1.2; }
-  .sos-badge {
-    background: rgba(0,0,0,0.25);
-    border-radius: 10px;
-    padding: 6px 14px;
-    text-align: center;
-    flex-shrink: 0;
+  .chapter-title { font-size: 15px; font-weight: 800; color: #fff; margin-top: 0; line-height: 1.2; } /* 🟢 폰트 크기 약간 축소(17->15), 상단 여백 제거 */
+.sos-badge {
+  background: rgba(0,0,0,0.25);
+  border-radius: 10px;
+  padding: 4px 14px;       /* 🟢 배지 내부 상하 여백 축소 (6px -> 4px) */
+  text-align: center;
+  flex-shrink: 0;
   }
   .sos-badge .sl { font-size: 9px; color: rgba(255,255,255,0.7); }
-  .sos-badge .sn { font-size: 22px; font-weight: 800; color: #fff; line-height: 1; }
+  .sos-badge .sn { font-size: 18px; font-weight: 800; color: #fff; line-height: 1; } /* 🟢 119 숫자 크기 축소 (22 -> 18) */
   .sos-badge .ss { font-size: 9px; color: rgba(255,255,255,0.75); }
 
   /* ── 챕터 슬라이더 ── */
