@@ -366,6 +366,42 @@
     0%,100% { transform: translateY(0); }
     50%      { transform: translateY(4px); }
   }
+
+  /* ── PC 및 태블릿(가로 768px 이상) 대응 반응형 스타일 ── */
+  @media (min-width: 768px) {
+    /* 1. 내용물 최대 너비 제한 및 중앙 정렬 (가독성 최적화) */
+    .slide-inner, .cover {
+      max-width: 800px;     /* 표와 내용이 무한정 늘어나지 않도록 너비 고정 */
+      margin: 0 auto;       /* 화면 중앙에 배치 */
+      padding-top: 30px;    /* PC 화면에 맞게 상단 여백 추가 */
+    }
+
+    /* 2. PC 환경에서 주요 글자 크기 +4px 일괄 확대 (!important로 강제 적용) */
+    .chapter-title { font-size: 19px !important; }
+    .card-hd .ct { font-size: 18px !important; }
+    .cover-h1 { font-size: 32px !important; }
+    .cover-sub { font-size: 17px !important; }
+    .cover-chap .cc-text { font-size: 18px !important; }
+
+    /* CH2: 하드코딩된 인라인 스타일 글자 크기 강제 덮어쓰기 */
+    .slide-inner div[style*="font-size:13px"] { font-size: 17px !important; }
+    .slide-inner div[style*="font-size:10px"] { font-size: 14px !important; }
+
+    /* CH3 ~ CH6: 본문 및 표 주요 텍스트 클래스 크기 확대 */
+    .rule-badge .rn { font-size: 18px !important; }
+    .rule-content .rs { font-size: 17px !important; }
+    .rule-content .rl { font-size: 17.5px !important; }
+    .sym-name { font-size: 18px !important; }
+    .sym-desc { font-size: 16.5px !important; }
+    .step-tit { font-size: 17px !important; }
+    .step-desc { font-size: 15.5px !important; }
+    .tbm-tag { font-size: 15px !important; }
+    .tbm-q { font-size: 17px !important; }
+    .alert-box .at { font-size: 17px !important; }
+    table.wt thead th { font-size: 17px !important; }
+    table.wt tbody td { font-size: 17.5px !important; }
+  }
+  
 </style>
 </head>
 <body>
